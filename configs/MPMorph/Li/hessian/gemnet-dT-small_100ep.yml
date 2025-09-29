@@ -1,0 +1,39 @@
+includes:
+# update includes path
+- /scratch/civil/staff/anair.cstaff/mlff-distill_stuff/configs/MPMorph/Li/gemnet-dT-small_100ep.yml
+
+trainer: src.distill_trainer.DistillTrainer
+# trainer: src.labels_trainer.LabelsTrainer
+
+dataset:
+  train:
+    teacher_labels_folder: /scratch/civil/staff/anair.cstaff/mlff-distill_stuff/labels/mace_mpa_0/Li_100
+    # Below is an exmaple of label configs if you want to generate that.
+    # This is for using any saved checkpoint for the teacher model
+    # teacher_checkpoint_path: checkpoints/2024-11-15-23-42-56-Solvated-Gem-DIST/best_checkpoint.pt
+    # teacher_labels_folder: zz_labels/tester_gemT_solvated/
+    # label_force_batch_size: 32
+    # label_jac_batch_size: 1
+    # vectorize_teach_jacs: False
+
+
+loss_functions:
+  - energy:
+      fn: per_atom_mae
+      coefficient: 5
+  - forces:
+      fn: l2mae
+      coefficient: 100
+  - teacher_forces:
+      fn: l2mae
+      coefficient: 0
+  - force_jacs:
+      fn: l2mae
+      coefficient: 400
+
+optim:
+  force_jac_sample_size: 1
+  print_memory_usage: False
+  vectorize_jacs: True
+  energy_distill_coeff: 0
+  finite_differences: True
