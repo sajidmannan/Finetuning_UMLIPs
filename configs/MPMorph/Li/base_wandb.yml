@@ -1,0 +1,66 @@
+#includes:
+#  - configs/slurm/premium.yml
+
+logger: 
+  name: wandb
+  project: MPMorph_Li
+
+trainer: ocp
+
+dataset:
+  train:
+    no_shuffle: True
+    format: lmdb
+    # change src path
+    src: /scratch/civil/staff/anair.cstaff/Fine-tuning-UMLFFS/Data/reduced_MPMorph/MPMorph_seperated/Li/train/lmdb 
+    key_mapping:
+      total_energy: energy
+      force: forces
+    transforms:
+      normalizer:
+        energy: 
+            mean: 0
+            rmsd: 1
+        forces: 
+            mean: 0 
+            rmsd: 1 
+      element_references:
+        # update file paths
+        file: /scratch/civil/staff/anair.cstaff/Fine-tuning-UMLFFS/configs/MPMorph/element_references.pt
+  val:
+    # update src path
+    src: /scratch/civil/staff/anair.cstaff/Fine-tuning-UMLFFS/Data/reduced_MPMorph/MPMorph_seperated/Li/val/lmdb
+  test:
+    # update src path
+        src: /scratch/civil/staff/anair.cstaff/Fine-tuning-UMLFFS/Data/reduced_MPMorph/MPMorph_seperated/Li/test/lmdb
+
+outputs:
+  energy:
+    shape: 1
+    level: system
+  forces:
+    irrep_dim: 1
+    level: atom
+    train_on_free_atoms: True
+    eval_on_free_atoms: True
+
+
+loss_functions:
+  - energy:
+      fn: per_atom_mae
+      coefficient: 5
+  - forces:
+      fn: l2mae
+      coefficient: 100
+    
+evaluation_metrics:
+  metrics:
+    energy:
+      - per_atom_mae
+    forces:
+      - mae
+      - cosine_similarity
+      - magnitude_error
+    misc:
+      - energy_forces_within_threshold
+  primary_metric: forces_mae

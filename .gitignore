@@ -1,0 +1,21 @@
+# bash scripts from hpc
+bash_scripts/
+
+# Extra configs files
+configs/MPMorph/chemical_system=Li/base_tensorboard.yml
+configs/MPMorph/chemical_system=Li/gemnet-dT-small_*
+configs/MPMorph/chemical_system=Li/hessian/gemnet-dT-small_*
+configs/MPMorph/Li/base_tensorboard.yml
+
+# Datasets used
+Data/
+
+# Log, checkpoints and results
+output_dir/
+
+# Teacher model checkpoints
+teacher_model/
+
+# unwanted files
+.DS_Store
+scripts/wandb_scripts/metrics.csv
